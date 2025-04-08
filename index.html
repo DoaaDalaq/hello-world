@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Projects API Test</title>
+</head>
+<body>
+  <h1>Test Projects API (No DB)</h1>
+
+  <button onclick="addProject()">Add Sample Project</button>
+  <button onclick="getProjects()">Show All Projects</button>
+
+  <br><br>
+
+  <label for="projectId">Enter Project ID:</label>
+  <input type="number" id="projectId" />
+  <button onclick="getProjectById()">Get Project</button>
+
+  <p id="specific-project-result"></p>
+
+  <ul id="project-list"></ul>
+
+  <script>
+    function addProject() {
+      fetch('http://localhost:3000/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'My Portfolio Site',
+          description: 'Stored in MongoDB!'
+        })
+      })
+        .then(res => res.json())
+        .then(() => {
+          alert('Project added!');
+          getProjects(); // Refresh list
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Failed to add project.');
+        });
+    }
+  
+    function getProjects() {
+      fetch('http://localhost:3000/api/projects')
+        .then(res => res.json())
+        .then(projects => {
+          const list = document.getElementById('project-list');
+          list.innerHTML = '';
+  
+          projects.forEach(project => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <strong>${project.title}</strong>: ${project.description}
+              <button onclick="deleteProject('${project._id}')">Delete</button>
+              <button onclick="updateProject('${project._id}')">Update</button>
+            `;
+            list.appendChild(li);
+          });
+        });
+    }
+  
+    function deleteProject(id) {
+      fetch(`http://localhost:3000/api/projects/${id}`, {
+        method: 'DELETE'
+      })
+        .then(() => {
+          alert(`Deleted project ${id}`);
+          getProjects();
+        })
+        .catch(err => {
+          console.error('Delete error:', err);
+          alert('Failed to delete.');
+        });
+    }
+  
+    function updateProject(id) {
+      const newTitle = prompt('Enter new title:');
+      const newDescription = prompt('Enter new description:');
+      if (!newTitle || !newDescription) {
+        alert('Title and description are required.');
+        return;
+      }
+  
+      fetch(`http://localhost:3000/api/projects/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle, description: newDescription })
+      })
+        .then(res => res.json())
+        .then(() => {
+          alert(`Updated project ${id}`);
+          getProjects();
+        })
+        .catch(err => {
+          console.error('Update error:', err);
+          alert('Failed to update.');
+        });
+    }
+  
+    function getProjectById() {
+      const id = document.getElementById('projectId').value;
+      if (!id) {
+        alert('Please enter a valid project ID.');
+        return;
+      }
+  
+      fetch(`http://localhost:3000/api/projects/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Project not found');
+          return res.json();
+        })
+        .then(project => {
+          document.getElementById('specific-project-result').innerText =
+            `✅ Project ${project._id}: ${project.title} - ${project.description}`;
+        })
+        .catch(err => {
+          document.getElementById('specific-project-result').innerText = '❌ Project not found.';
+        });
+    }
+  
+    window.onload = getProjects;
+  </script>
+  
+</body>
+</html>
