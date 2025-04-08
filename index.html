@@ -21,104 +21,33 @@
   <ul id="project-list"></ul>
 
   <script>
+    let projects = [];
+
+    // TODO POST: Add a new project to the list
     function addProject() {
-      fetch('http://localhost:3000/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'My Portfolio Site',
-          description: 'Stored in MongoDB!'
-        })
-      })
-        .then(res => res.json())
-        .then(() => {
-          alert('Project added!');
-          getProjects(); // Refresh list
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Failed to add project.');
-        });
+      // Your code to add a project will go here
     }
-  
+
+    // TODO GET: Retrieve all projects and display them
     function getProjects() {
-      fetch('http://localhost:3000/api/projects')
-        .then(res => res.json())
-        .then(projects => {
-          const list = document.getElementById('project-list');
-          list.innerHTML = '';
-  
-          projects.forEach(project => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <strong>${project.title}</strong>: ${project.description}
-              <button onclick="deleteProject('${project._id}')">Delete</button>
-              <button onclick="updateProject('${project._id}')">Update</button>
-            `;
-            list.appendChild(li);
-          });
-        });
+      // Your code to get all projects will go here
     }
-  
+
+    // TODO DELETE: Delete a project by its ID
     function deleteProject(id) {
-      fetch(`http://localhost:3000/api/projects/${id}`, {
-        method: 'DELETE'
-      })
-        .then(() => {
-          alert(`Deleted project ${id}`);
-          getProjects();
-        })
-        .catch(err => {
-          console.error('Delete error:', err);
-          alert('Failed to delete.');
-        });
+      // Your code to delete a project will go here
     }
-  
+
+    // TODO UPDATE: Update a project by its ID
     function updateProject(id) {
-      const newTitle = prompt('Enter new title:');
-      const newDescription = prompt('Enter new description:');
-      if (!newTitle || !newDescription) {
-        alert('Title and description are required.');
-        return;
-      }
-  
-      fetch(`http://localhost:3000/api/projects/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle, description: newDescription })
-      })
-        .then(res => res.json())
-        .then(() => {
-          alert(`Updated project ${id}`);
-          getProjects();
-        })
-        .catch(err => {
-          console.error('Update error:', err);
-          alert('Failed to update.');
-        });
+      // Your code to update a project will go here
     }
-  
+
+    // TODO GET: Retrieve a project by its ID
     function getProjectById() {
-      const id = document.getElementById('projectId').value;
-      if (!id) {
-        alert('Please enter a valid project ID.');
-        return;
-      }
-  
-      fetch(`http://localhost:3000/api/projects/${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Project not found');
-          return res.json();
-        })
-        .then(project => {
-          document.getElementById('specific-project-result').innerText =
-            `✅ Project ${project._id}: ${project.title} - ${project.description}`;
-        })
-        .catch(err => {
-          document.getElementById('specific-project-result').innerText = '❌ Project not found.';
-        });
+      // Your code to get a project by ID will go here
     }
-  
+
     window.onload = getProjects;
   </script>
   
